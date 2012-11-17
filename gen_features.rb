@@ -31,7 +31,7 @@ def main()
   ARGF.each do |line|
     # Handle CSV
     csv_fields = (CSV.parse_line(line))[0];
-    text = csv_fields[0]
+    text = csv_fields
 
     # Reset counts
     [word_shapes, word_lens, num_chars, alpha_chars, punc_chars, spec_chars, func_words].each do |h|

@@ -54,7 +54,7 @@ end
 % Aggregate and normalize rankings.
 agg_score = (sum(distances,1))';
 [score, centroid_number] = sort(agg_score, 'ascend');
-score = 1 - (score ./ sum(score));
+score = 1 ./ (score ./ min(score));
 ranking = [centroid_number score];
 
 end

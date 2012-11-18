@@ -35,8 +35,11 @@ col_non_zero_means((col_non_zero_means==0) | isnan(col_non_zero_means)) = 1;
 trainX = trainX * diag(1 ./ col_non_zero_means);
 
 % Normalize data rows to norm=1.
-row_norms = sqrt(sum(trainX.^2, 2));
-trainX = diag(1 ./ row_norms) * trainX;
+%row_norms = sqrt(sum(trainX.^2, 2));
+%trainX = diag(1 ./ row_norms) * trainX;
+for i=1:size(trainX,1)
+    trainX(i,:)=trainX(i,:)./ row_norms(i);
+end
 
 % Compute the centroid of each training class.
 for i=1:length(trainFileList)

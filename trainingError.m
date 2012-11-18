@@ -5,7 +5,9 @@ f = fopen(mapFile);
 mapF=textscan(f,'%d,%s\n');
 fclose(f);
 
-correctGuesses = 0;
+correctGuesses_5 = 0;
+correctGuesses_1 = 0;
+correctGuesses_10 = 0;
 totalPopulation = 0;
 
 % calculate training error
@@ -18,7 +20,13 @@ for i=1:size(mapF{1,1})
       prediction = nn_predict(filename,1,j);
       % if the correct answer is in the top 5
       if sum(prediction(1:5,1)==mapF{1,1}(i))==1
-          correctGuesses = correctGuesses +1;
+          correctGuesses_5 = correctGuesses_5 +1;
+      end
+      if sum(prediction(1:10,1)==mapF{1,1}(i))==1
+          correctGuesses_10 = correctGuesses_10 +1;
+      end
+      if prediction(1)==mapF{1,1}(i)==1
+          correctGuesses_1 = correctGuesses_1 +1;
       end
       totalPopulation=totalPopulation+1;          
   end
@@ -26,5 +34,7 @@ for i=1:size(mapF{1,1})
   correctGuesses/totalPopulation  
 end
 
-correctGuesses
+correctGuesses_1
+correctGuesses_5
+correctGuesses_10
 totalPopulation

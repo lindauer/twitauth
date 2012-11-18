@@ -9,20 +9,21 @@ colNormFile = sprintf('%s/col_nz_means.csv', modelDir);
 trainFileList = dir(trainFiles);
 mapFd = fopen(mapFile, 'w');
 
-trainX = zeros(0,0);
-trainY = zeros(0,0);
+trainX = sparse(zeros(0,0));
+trainY = sparse(zeros(0,0));
 
 % Read all the feature data into a design matrix, keeping track of int->name
 % mapping.
 %
 % NOTE: If this is slow, we can move this to a preprocessing step.
 %for i=1:length(trainFileList)
-for i=1:260
+% Temporarily cap at 260 training streams.
+for i=1:min(260, length(trainFileList))
   filename = sprintf('%s/%s', trainFileDir, trainFileList(i).('name'));
   % Read CSV file, skipping header
   M = csvread(filename, 1, 0);
-  trainX = [trainX; M];
-  trainY = [trainY; ones(size(M, 1), 1) * i];
+  trainX = [trainX; sparse(M)];
+  trainY = [trainY; sparse(ones(size(M, 1), 1) * i)];
   
   fprintf(mapFd, '%d,%s\n', i, trainFileList(i).('name'));
 end
@@ -51,5 +52,5 @@ for i=1:length(trainFileList)
   centroids(i,:) = mean(trainX(trainY==i,:));
 end
 
-dlmwrite(colNormFile, col_non_zero_means);
+dlmwrite(colNormFile, full(col_non_zero_means));
 dlmwrite(centroidsFile, centroids);

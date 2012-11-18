@@ -1,4 +1,4 @@
-function [ ranking ] = nn_predict( varargin )
+function [ ranking, distances ] = nn_predict( varargin )
 % nn_predict predicts the class for a test Twitter feed.
 % The return value is a ncentroids x 2 matrix where the
 % first column is the numeric identifier for a class
@@ -57,5 +57,16 @@ agg_score = (sum(distances,1))';
 score = 1 ./ (score ./ min(score));
 ranking = [centroid_number score];
 
-end
+
+
+%  
+% score_twt = zeros(size(distance));
+% centroid_number_twt(i,:) = zeros(size(distance));
+% 
+% for i=1:size(distances,1)
+%     [score_twt(i,:), centroid_number_twt(i,:)] = sort(distances(i,:),'ascend');
+%     score_twt(i,:)=(score_twt(i,:)) ./ sum(score_twt(i,:));
+% end
+% 
+% tweet_ranking = [centroid_number_twt score-twt];
 

@@ -31,7 +31,7 @@ for i=1:size(mapF{1,1})
       totalPopulation=totalPopulation+1;          
   end
   mapF{1,2}{i,1}
-  correctGuesses/totalPopulation  
+  correctGuesses_10/totalPopulation  
 end
 
 correctGuesses_1

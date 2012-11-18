@@ -33,10 +33,9 @@ if(length(varargin)==2)
     testX = testX(1:varargin{2},:);
 end
 if(length(varargin)==3)
-    testX = testX(varargin{2}*varargin{3}:varargin{2}*(varargin{3}+1),:);
+    testX = testX(varargin{2}*(varargin{3}-1)+1:varargin{2}*(varargin{3}),:);
 end
 m = size(testX, 1);
-keyboard;
 
 % Normalize example tweets by column.
 testX = testX * diag(1 ./ col_non_zero_means);

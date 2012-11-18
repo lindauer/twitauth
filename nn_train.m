@@ -16,7 +16,6 @@ trainY = sparse(zeros(0,0));
 % mapping.
 %
 % NOTE: If this is slow, we can move this to a preprocessing step.
-%for i=1:length(trainFileList)
 % Temporarily cap at 260 training streams.
 for i=1:min(260, length(trainFileList))
   filename = sprintf('%s/%s', trainFileDir, trainFileList(i).('name'));

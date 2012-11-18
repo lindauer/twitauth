@@ -16,13 +16,13 @@ for i=1:size(mapF{1,1})
   M = csvread(filename, 1, 0);
   for j=1:size(M,1)
       prediction = nn_predict(filename,1,j);
-      keyboard;
-      if prediction(1,1)==mapF{1,1}(i)
+      % if the correct answer is in the top 5
+      if sum(prediction(1:5,1)==mapF{1,1}(i))==1
           correctGuesses = correctGuesses +1;
       end
       totalPopulation=totalPopulation+1;          
   end
-  mapF{1,2}{1,i}
+  mapF{1,2}{i,1}
   correctGuesses/totalPopulation  
 end
 

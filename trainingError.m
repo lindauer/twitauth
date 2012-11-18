@@ -10,7 +10,7 @@ correctGuesses_1 = 0;
 correctGuesses_10 = 0;
 totalPopulation = 0;
 
-accuracy = zeros(size(mapF,1),4);
+accuracy = zeros(size(mapF{1,1},1),4);
 
 % calculate training error
 for i=1:size(mapF{1,1})

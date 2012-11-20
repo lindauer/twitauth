@@ -96,6 +96,9 @@
 % When switching from latex to pdflatex and vice-versa, the compiler may
 % have to be run twice to clear warning/error messages.
 
+\usepackage{tabularx}
+\usepackage{booktabs}
+
 
 
 
@@ -103,7 +106,7 @@
 
 % *** CITATION PACKAGES ***
 %
-%\usepackage{cite}
+\usepackage{cite}
 % cite.sty was written by Donald Arseneau
 % V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
 % \cite{} output to follow that of IEEE. Loading the cite package will
@@ -126,13 +129,14 @@
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
+\usepackage{graphicx}
 \ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
+  %\usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
   % \graphicspath{{../pdf/}{../jpeg/}}
   % and their extensions so you won't have to specify these with
   % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+  %\DeclareGraphicsExtensions{.pdf,.jpeg,.png}
 \else
   % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
   % will default to the driver specified in the system graphics.cfg if no
@@ -352,7 +356,7 @@
 %
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
-\title{Author Identification on Twitter}
+\title{Author Identification on Twitter (Milestone Report)}
 
 
 % author names and affiliations
@@ -433,7 +437,7 @@ this sea of tweets. Our project investigates whether the identity of
 an anonymous Twitter user can, in fact, be uncovered using only
 linguistic stylometry. Authorship recognition is a very well-studied
 domain, but the scale is almost always limited to no more than a few
-hundred authors. Narayanan, et al.[1] study authorship recognition at
+hundred authors. Narayanan, et al.\cite{Narayanan} study authorship recognition at
 Internet scale, by looking at the characteristics of different
 classifiers when applied to a corpus of approximately 100k
 blogs. Starting with the set of features, classifiers, and
@@ -443,41 +447,46 @@ that paper we adapt them to Twitter data and measure the results.
 % (should never be an issue)
 
 \section{Data Collection}
-Our goal was to obtain a training set across at least one thousand
-users and have at least a thousand tweets per user to enable our
-feature set to have enough data due to the sparsity of our planned
-data features. Our first data collection task was to identify an
-appropriate subset of the Twitter users and Twitter users in which we
-have prior knowledge that they are authored by the same user.
+Our goal was to obtain a training set across at least 1000 users and
+have at least 1000 tweets per user to enable our feature set to have
+enough data due to the sparsity of our planned data features. Our
+first data collection task was to identify an appropriate subset of
+the Twitter users and Twitter users in which we have prior knowledge
+that they are authored by the same user.
 
-Below is a table describing the various sources we attempted gathering and how we ended up using the data.
-
-Source	Desired Usage	Actual Usage
-Klout	We attempted to gather the top thousand klout users as a method of gathering users with rich content.	Did not use. Only small lists of top klout rankings are published and we were not able to obtain a list longer than 10-20.
-Twitter Firehose	Obtain tons of tweets across a massive number of users.	Did not use.  While the data was broad, it did not provide us with a long enough history of any individual user to populate our sparse set of features.
-Twitaholic	Provides a top 1000 “most followed” list of Twitter users.	Used as a starting point for a list of users to gather data from.
-Dell Solicitation	Obtain a list of employees who maintain two seperate Twitter accounts.	Used to populate a set of “known” Twitter accounts that are authored by the same person.
-Web Search	Search for phrases such as “also follow me at” on Twitter profile pages.	Used to populate a set of “known” Twitter accounts that are authored by the same person.
-Google Plus API Profile Scrape	Discover users that report having multiple Twitter feeds to be followed.	Not currently used as manual filtering of unusable feeds is still required.
-
-
+Table I describes the various sources we attempted gathering and how we ended up using the data.
+\begin{table}[!h]
+  \centering
+  \begin{tabularx}{\linewidth}{X X X}
+    \toprule
+    \bf{Source} & \bf{Desired Usage} & \bf{Actual Usage} \\ \midrule
+    Klout & We attempted to gather the top thousand klout users as a method of gathering users with rich content. & Not used. Only small lists of top klout rankings are published and we were not able to obtain a list longer than 10-20. \\ \midrule
+    Twitter Firehose & Obtain tons of tweets across a massive number of users. & Not used. While the data was broad, it did not provide us with a long enough history of any individual user to populate our sparse set of features. \\ \midrule
+    Twitaholic & Provides a top 1000 “most followed” list of Twitter users. & Used as a starting point for a list of users to gather data from. \\ \midrule
+    Dell Solicitation & Obtain a list of employees who maintain two seperate Twitter accounts. & Used to populate a set of “known” Twitter accounts that are authored by the same person. \\ \midrule
+    Web Search & Search for phrases such as “also follow me at” on Twitter profile pages. & Used to populate a set of “known” Twitter accounts that are authored by the same person. \\ \midrule
+    Google Plus Profile Scrape & Discover users that report having multiple Twitter feeds to be followed. & Not yet used as manual filtering of unusable feeds is still required. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Data Sources}
+\end{table}
 We initially utilized a web site called discovertext.com to follow the
 desired accounts and begin collecting data. However, we discovered
 that the site did not capture all of the data we would like to use in
 our feature set and the rate in which new tweets were produced did not
-provide enough history to give us the desired data size per user. The
+provide enough history to give us the desired data size per user. A
 key data element we wanted to capture that was not available was the
 text of the original tweet in the case of a retweet. As a result we
 utilized the Twitter API to gather the last 1000 tweets of each of the
-users identified in the above table. Primarily due to Twitter rate
-limit limitations the data gathering took a few days to complete.
+users identified in Table I. Primarily due to Twitter rate limit
+limitations the data gathering took a few days to complete.
 
 We identified a collection of Twitter account pairs, where one author
 is responsible for both accounts. Our primary methods for identifying
 those accounts were a request to employees of Dell with official Dell
 Twitter accounts, and using Google to search for phrases indicating
 multiple Twitter accounts. We also obtained some meta-information
-about Google Plus profiles from the authors of [4] and used that to
+about Google Plus profiles from the authors of \cite{Perito} and used that to
 target a crawl of Google Plus profile data. This produced an
 additional set of account pairs, but those cannot be used until we
 manually filter them to eliminate non-English feeds, feeds containing
@@ -503,34 +512,47 @@ and the final project report.
 
 \section{Features}
 
-Our initial selection of features was inspired by Narayanan,
-Writeprints, and Pennebaker. It is, in fact, nearly a subset of the
+Our initial selection of features was inspired by
+Narayanan\cite{Narayanan}, Writeprints\cite{Abbasi}, and
+Ireland\cite{Ireland}. It is, in fact, nearly a subset of the
 Narayanan features. These features aim to focus on the style of the
 tweet rather than its content. So, for example, we specifically look
 at function/stop words rather than ignoring them and focusing on words
 with large TF.IDF scores.
 
-Category	Description	Count
-Length	words/characters per post	2
-Word shape	frequency of words in uppercase, lowercase, capitalized, camelcase, and other capitalization schemes	5
-Word length	histogram of word lengths from 1-20	20
-Character frequencies	frequency of letters a-z (ignoring case), digits, and most punctuation characters	68
-Unicode	frequency of non-ASCII characters	1
-Function/stop words	frequency of words like ‘the’, ‘of’, and ‘then’	293
-
-(Most wording in this table is from [1].)
-
-So we are currently working with 389 features. There are a number of
+\begin{table}[h]
+  \centering
+  \begin{tabularx}{\linewidth}{l X l}
+    \toprule
+    \bf{Category} & \bf{Description} & \bf{Count} \\ \midrule
+    Length & words/characters per post & 2 \\ \midrule
+    Word shape & frequency of words in uppercase, lowercase, capitalized, camelcase, and other capitalization schemes & 5 \\ \midrule
+    Word length & histogram of word lengths from 1-20 & 20 \\ \midrule
+    Character frequencies & frequency of letters a-z (ignoring case), digits, and many ASCII symbols & 68 \\ \midrule
+    Unicode & frequency of non-ASCII characters & 1 \\ \midrule
+    Function/stop words & frequency of words like ``the'', ``of'', and ``then'' & 293 \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Current features, mostly from \cite{Narayanan}}
+\end{table}
+We are currently working with 389 features. There are a number of
 additional feature categories we plan to investigate over the next few
-weeks.
+weeks, listed in Table III.
 
-Category	Description
-Parse tree	features relating to the English syntax of the tweet
-Function word categories	frequency of words indicating certain states of mind
-Bigrams	frequency of character bigrams
-Twitter conventions	frequency of Twitter-specific abbreviations such as RT, HT, and MT
-Retweets	features relating to the user’s handling of retweets
-
+\begin{table}[h]
+  \centering
+  \begin{tabularx}{\linewidth}{l X}
+    \toprule
+    \bf{Category} & \bf{Description} \\ \midrule
+    Parse tree & features relating to the English syntax of the tweet \\ \midrule
+    Function word categories & frequency of words indicating certain states of mind \\ \midrule
+    Bigrams & frequency of character bigrams \\ \midrule
+    Twitter conventions & frequency of Twitter-specific abbreviations such as RT, HT, and MT \\ \midrule
+    Retweets & features relating to the user’s handling of retweets \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Prospective Features}
+\end{table}
 
 \section{Classifiers}
 
@@ -557,9 +579,9 @@ At prediction time, we read the extracted features of each tweet in
 the test stream. For each of those tweets, we measure the Euclidean
 distance to each of the centroids computed in training. Then we take
 the sum of the distances of all the tweets to each of the centroids
-and the centroids are ranked by their overall nearness to the
-collection of tweets. We ask whether the account by the same author
-appears in the top N\% of the ranking, including whether it is ranked
+and rank the centroids by their average nearness to a tweet in the
+test stream. We ask whether the account by the same author appears in
+the top N\% of the ranking, including whether it is ranked
 first. Because at the time of this writing, we only have 22 labeled
 pairs of Twitter accounts, we also measured generalization error using
 70/30 cross validation on tweets from the same account. In computing
@@ -574,19 +596,50 @@ set is composed largely of one-grams and function words.
 Though our sample size is small, we are able to use our 22 labeled
 account pairs to get a measure of accuracy when the algorithm is
 applied to our intended use case. Given one of the accounts in the
-pair, the classifier ranks the other account first 22\% of the
-time. Additionally, the correct author appears in the top 20\% of the
-ranking more than 63\% of the time.
+pair, the classifier ranks the other account first 18\% of the time --
+an error rate of 82\%. But the correct author is ranked at least 2nd
+27\% of the time. And they appear in the top 10\% of the ranking
+nearly 60\% of the time. Figure 1 shows the cumulative distribution
+over these rankings.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3.5in]{resultcdf.png}
+\caption{Cumulative distribution of percentile rank over test examples}
+\label{fig_sim}
+\end{figure}
+
 
 \section{Continuing Work}
 
-To further increase this accuracy, we have a number of possible avenues to explore over the next few weeks:
+We believe that by improving our featureset and adding RLSC, we will
+be able to further improve our classification accuracy. There are a
+number of tasks we hope to work on in order to both increase our
+accuracy and to increase our understanding of our results.
 
-Adding the regularized least squares classifier.
-Adding additional features.
-Studying which features are predictive and removing those that are not.
+\begin{itemize}
+\item Adding the regularized least squares classifier.
+\item Adding additional features.
+\item Studying which features are most predictive, and possibly
+  removing those that are not.
+\item Studying the effect of aggregating tweets for prediction rather
+  than evaluating each tweet's distance individually.
+\item Studying the effect of the number of available tweets in a feed
+  on prediction accuracy.
+\item Continuing to collect data from additional arbitrary streams to
+  better understand how the algorithm might perform at larger scales.
+\item Add more labeled Twitter account pairs to help smooth the effect
+  of odd accounts (both positive and negative) in our test data.
+\end{itemize}
 
-We would also like to better test the significance of our results by continuing to collect data both from arbitrary or popular Twitter feeds and from author-labeled feed pairs.
+\section{Conclusion}
+
+We are encouraged by our initial result. The algorithm exhibits
+excellent accuracy in cross validation, and even does fairly well in
+the general use case where the test stream comes from a different
+Twitter account by the same author. We expected less accuracy from
+Twitter than from the blog or email data used in previous work becuase
+the amount of data is so much smaller. So the work is promising.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -672,8 +725,6 @@ We would also like to better test the significance of our results by continuing 
 
 
 
-\section{Conclusion}
-The conclusion goes here. this is more of the conclusion
 
 % conference papers do not normally have an appendix
 
@@ -710,9 +761,17 @@ The conclusion goes here. this is more of the conclusion
 % (used to reserve space for the reference number labels box)
 \begin{thebibliography}{1}
 
-\bibitem{IEEEhowto:kopka}
-H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+\bibitem{Abbasi}
+Abbasi, Ahmed, and Hsinchun Chen. "Writeprints: A stylometric approach to identity-level identification and similarity detection in cyberspace." ACM Transactions on Information Systems 26.2 (2008): 7.
+
+\bibitem{Narayanan}
+Narayanan, Arvind, et al. "On the feasibility of internet-scale author identification." Security and Privacy (SP), 2012 IEEE Symposium on. IEEE, 2012.
+
+\bibitem{Ireland}
+Ireland, M.E., \& Pennebaker, J.W. (2010).  Language style matching in writing: Synchrony in essays, correspondence, and poetry.  Journal of Personality and Social Psychology, 99.
+
+\bibitem{Perito}
+Perito, Daniele, et al. "How unique and traceable are usernames?." Privacy Enhancing Technologies. Springer Berlin/Heidelberg, 2011.
 
 \end{thebibliography}
 

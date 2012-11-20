@@ -533,9 +533,10 @@ with large TF.IDF scores.
   \end{tabularx}
   \caption{Current features, mostly from \cite{Narayanan}}
 \end{table}
-We are currently working with 389 features. There are a number of
-additional feature categories we plan to investigate over the next few
-weeks, listed in Table III.
+We are currently working with 389 features that we extracted using
+Ruby. There are a number of additional feature categories we plan to
+investigate over the next few weeks, listed in Table III.
+
 
 \begin{table}[h]
   \centering
@@ -559,10 +560,11 @@ combination of nearest neighbors (NN) and regularized least squares
 classification (RLSC), we decided to first implement these classifiers
 and run them against the data. We soon discovered that RLSC is quite
 complicated and decided to begin with just NN to get a working
-end-to-end example with which we could begin running
-diagnostics. During the remainder of the quarter, we do plan to return
-to RLSC to compare performance of NN and RLSC separately and in
-combination.
+end-to-end example with which we could begin running diagnostics. Due
+the simplicity of the algorithm and our need to potentially utilize
+intermediate data, we opted to implement NN in Matlab. During the
+remainder of the quarter, we do plan to return to RLSC to compare
+performance of NN and RLSC separately and in combination.
 
 Focusing on NN, we implemented the variation described by Narayanan
 along with the normalization procedure from that same paper. Rather
@@ -639,7 +641,8 @@ excellent accuracy in cross validation, and even does fairly well in
 the general use case where the test stream comes from a different
 Twitter account by the same author. We expected less accuracy from
 Twitter than from the blog or email data used in previous work becuase
-the amount of data is so much smaller. So the work is promising.
+the amount of data is so much smaller. So the work is promising and
+there is a substantial opportunity for continued exploration..
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.

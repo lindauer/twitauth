@@ -18,12 +18,22 @@ function [ ranking, distances ] = RLSC_predict( varargin )
 modelDir = './model';
 % Lookup table of centroid ID to Twitter account.
 wFile = sprintf('%s/w.csv', modelDir);
+colNormFile = sprintf('%s/col_nz_means.csv', modelDir);
 
-% centroids contains a row for each centroid and a column for each feature.
+
+% read w and normalization files
 w = dlmread(wFile);
+col_non_zero_means = dlmread(colNormFile);
 
 % Read example tweets.
 testX = csvread(varargin{1}, 1, 0);
+
+% Normalize example tweets by column.
+testX = testX * diag(1 ./ col_non_zero_means);
+
+% Normalize example tweets by row.
+row_norms = sqrt(sum(testX.^2, 2));
+testX = diag(1 ./ row_norms) * testX;
 
 % Use args in to trim sample size and page
 if(length(varargin)==2)
@@ -35,15 +45,24 @@ end
 m = size(testX, 1);
 
 % Produce a ranking for each example tweet.
-for i=1:m
-  distances(i,:) = w'*testX(i,:)';
+% for i=1:m
+%   distances(i,:) = w'*testX(i,:)';
+% end
+
+distances=testX*w;
+
+[value location]=max(distances,[],2);
+new_distances=zeros(size(distances));
+for i=1:size(new_distances,1)
+    new_distances(i,location)=1;
 end
 
 % Aggregate and normalize rankings.
 agg_score = (sum(distances,1))';
 [score, centroid_number] = sort(agg_score, 'descend');
-score = 1 - (score ./ sum(score));
+score = (score ./ sum(score));
 ranking = [centroid_number score];
+
 
 
 

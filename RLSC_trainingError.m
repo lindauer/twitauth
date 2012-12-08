@@ -28,10 +28,13 @@ for i=1:size(mapF{1,1})
 %  dlmwrite('train_accuracy.csv',distances, '-append');
   
   if prediction(1,1)==mapF{1,1}(i)
-      num_correct = num_correct+1
+      num_correct = num_correct+1;
   end
-  mapF{1,2}{i,1}
-  prediction(1,1)==mapF{1,1}(i)
+%  mapF{1,2}{i,1};
+%  prediction(1,1)==mapF{1,1}(i);
+  
+sprintf('%d correct and %d errors out of %d. Training Error = %d',num_correct,i-num_correct,i,(i-num_correct)/i)
+% keyboard;
 
 end
 

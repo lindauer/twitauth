@@ -30,7 +30,7 @@ for i=1:size(mapF{1,1})
       num_correct = num_correct+1
   end
   mapF{1,2}{i,1}
-  prediction(1,1)==mapF{1,1}(1)
+  prediction(1,1)==mapF{1,1}(i)
 
 end
 

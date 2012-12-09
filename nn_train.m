@@ -16,8 +16,10 @@ trainY = sparse(zeros(0,0));
 % mapping.
 %
 % NOTE: If this is slow, we can move this to a preprocessing step.
-% Temporarily cap at 260 training streams.
-for i=1:min(260, length(trainFileList))
+cpb = ConsoleProgressBar();
+cpb.setLength(20);
+cpb.start();
+for i=1:length(trainFileList)
   filename = sprintf('%s/%s', trainFileDir, trainFileList(i).('name'));
   % Read CSV file, skipping header
   M = csvread(filename, 1, 0);
@@ -25,10 +27,14 @@ for i=1:min(260, length(trainFileList))
   trainY = [trainY; sparse(ones(size(M, 1), 1) * i)];
   
   fprintf(mapFd, '%d,%s\n', i, trainFileList(i).('name'));
+  cpb.setText(sprintf('Reading files... %s', trainFileList(i).('name')));
+  cpb.setValue(100*(i/length(trainFileList)));
 end
+cpb.stop();
 
 fclose(mapFd);
 
+fprintf('Normalizing data... ');
 % Normalize data columns using mean of non-zero features.
 col_non_zero_means = sum(trainX) ./ sum(trainX ~= 0);
 % Avoid dividing by zero or NaN in columns that are all zeros.
@@ -41,7 +47,11 @@ row_norms = sqrt(sum(trainX.^2, 2));
 for i=1:size(trainX,1)
     trainX(i,:)=trainX(i,:)./ row_norms(i);
 end
+fprintf('done.\n');
 
+cpb = ConsoleProgressBar();
+cpb.setLength(20);
+cpb.start();
 % Compute the centroid of each training class.
 for i=1:length(trainFileList)
   if i==1
@@ -49,7 +59,11 @@ for i=1:length(trainFileList)
   end
   
   centroids(i,:) = mean(trainX(trainY==i,:));
+  cpb.setText(sprintf('Computing centroids... %s', trainFileList(i).('name')));
+  cpb.setValue(100*(i/length(trainFileList)));
 end
+cpb.stop();
+fprintf('\n');
 
 dlmwrite(colNormFile, full(col_non_zero_means));
 dlmwrite(centroidsFile, centroids);

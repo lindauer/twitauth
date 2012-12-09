@@ -30,7 +30,7 @@ def main()
 
   ARGF.each do |line|
     # Handle CSV
-    csv_fields = (CSV.parse_line(line))[0];
+    csv_fields = (CSV.parse_line(line, :row_sep => "\n"))[0];
     text = csv_fields
 
     # Reset counts

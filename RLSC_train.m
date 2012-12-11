@@ -40,13 +40,13 @@ sprintf('successfully loaded %d tweets. Beginning Normalization Step',size(train
 fclose(mapFd);
 
 % perform feature mean normalization of columns
-for i=1:size(trainX,2)
-    feature_std(1,i)=std(trainX(:,i));
-end    
-feature_means=mean(trainX);
-for i=1:size(trainX)
-    trainX(i,:)=(trainX(i,:)-feature_means)./feature_std;
-end
+% for i=1:size(trainX,2)
+%     feature_std(1,i)=std(trainX(:,i));
+% end    
+% feature_means=mean(trainX);
+% for i=1:size(trainX)
+%     trainX(i,:)=(trainX(i,:)-feature_means)./feature_std;
+% end
 
 % Normalize data columns using mean of non-zero features.
 col_non_zero_means = sum(trainX) ./ sum(trainX ~= 0);
@@ -76,33 +76,25 @@ end
 disp('Completed Y Matrix Generation. Beginning Training Step')
 
 % this method does not penalize false positives
-w =((lambda*eye(size(trainX,2),size(trainX,2))+trainX'*trainX))^-1*(trainX'*(superY));   
+%w =((lambda*eye(size(trainX,2),size(trainX,2))+trainX'*trainX))^-1*(trainX'*(superY));   
 
 
-% for i=1:length(trainFileList)
-%     i
-%     train_in=zeros(1,size(trainX,2));
-%     a = nonzeros(superY(:,i));
-%     train_in=[train_in;trainX(a,:)];
-% 
-%     size(train_in)
-%     
-%     b=ceil(rand(length(a),1)*size(trainX,1));
-%     
-%     train_in=[train_in;trainX(b,:)];
-%     
-%     train_in=train_in(2:size(train_in,1),:);
-%     c=[a;b];
-%     trainTemp=superY(b,i)-2*size(b,1);
-%     trainTemp=[superY(a,i);trainTemp];
-%     
-%     w(:,i)=((lambda*eye(size(train_in,2),size(train_in,2))+train_in'*train_in))^-1*(train_in'*(trainTemp));
-% end
+for i=1:size(superY,2)
+    i
+    weight = (size(superY,1)-sum(superY(:,i)))/sum(superY(:,i));
+    
+    constant=sparse(weight*(superY(:,i))+(1-superY(:,i)));
+    
+    phi=spdiags(constant(:),0,length(constant),length(constant));   
+    
+%    w(:,i)=((lambda*eye(size(trainX,2),size(trainX,2))+trainX'*trainX))^-1*(trainX'*(superY(:,i)));
+    w(:,i)=(trainX'*phi*trainX+2*lambda*eye(size(trainX,2),size(trainX,2)))^-1*(trainX'*phi*superY(:,i));
+end
                 
 
 dlmwrite(wFile,w);
 dlmwrite(colNormFile, full(col_non_zero_means));
-dlmwrite(featureMeanFile, full(feature_means));
-dlmwrite(featureStdFile, full(feature_std));
+% dlmwrite(featureMeanFile, full(feature_means));
+% dlmwrite(featureStdFile, full(feature_std));
 
 

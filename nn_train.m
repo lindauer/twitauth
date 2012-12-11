@@ -34,7 +34,7 @@ cpb.stop();
 
 fclose(mapFd);
 
-fprintf('Normalizing data... ');
+fprintf('\nNormalizing data... ');
 % Normalize data columns using mean of non-zero features.
 col_non_zero_means = sum(trainX) ./ sum(trainX ~= 0);
 % Avoid dividing by zero or NaN in columns that are all zeros.

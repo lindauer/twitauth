@@ -1,5 +1,4 @@
 bluecollard,printedproof
-ABFoundation,AlecBaldwin
 KrisColvin,SportingKCWUFC
 BigScrum,kschwaber
 suzrobitaille,abledbody

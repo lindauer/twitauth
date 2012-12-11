@@ -1,3 +1,4 @@
+want_parallel = true;
 trainFileDir = './train';
 trainFiles = sprintf('%s/*.csv', trainFileDir);
 modelDir = './model';
@@ -25,6 +26,9 @@ trainY = sparse(zeros(0,0));
 
 sprintf('loading %d files...',size(trainFileList,1))
 
+cpb = ConsoleProgressBar();
+cpb.setLength(20);
+cpb.start();
 for i=1:length(trainFileList)
   filename = sprintf('%s/%s', trainFileDir, trainFileList(i).('name'));
   % Read CSV file, skipping header
@@ -33,7 +37,10 @@ for i=1:length(trainFileList)
   trainY = [trainY; ones(size(M, 1), 1) * i];
   
   fprintf(mapFd, '%d,%s\n', i, trainFileList(i).('name'));
+  cpb.setText(sprintf('Reading files... %s', trainFileList(i).('name')));
+  cpb.setValue(100*(i/length(trainFileList)));
 end
+cpb.stop();
 
 sprintf('successfully loaded %d tweets. Beginning Normalization Step',size(trainX,1))
 
@@ -78,18 +85,29 @@ disp('Completed Y Matrix Generation. Beginning Training Step')
 % this method does not penalize false positives
 %w =((lambda*eye(size(trainX,2),size(trainX,2))+trainX'*trainX))^-1*(trainX'*(superY));   
 
+% Set up parallel processing worker pool.
+if ((matlabpool('size') == 0) && want_parallel)
+  % Limit to 6 cores because of out of memory errors on corn.
+  matlabpool('open', min(feature('numCores'), 6));
+end
 
-for i=1:size(superY,2)
-    i
+cpb = ConsoleProgressBar();
+cpb.setLength(20);
+cpb.start();
+parfor i=1:size(superY,2)
     weight = (size(superY,1)-sum(superY(:,i)))/sum(superY(:,i));
     
     constant=sparse(weight*(superY(:,i))+(1-superY(:,i)));
     
-    phi=spdiags(constant(:),0,length(constant),length(constant));   
+    phi=spdiags(constant(:),0,length(constant),length(constant));
     
-%    w(:,i)=((lambda*eye(size(trainX,2),size(trainX,2))+trainX'*trainX))^-1*(trainX'*(superY(:,i)));
-    w(:,i)=(trainX'*phi*trainX+2*lambda*eye(size(trainX,2),size(trainX,2)))^-1*(trainX'*phi*superY(:,i));
+    train_xt_phi = trainX' * phi;
+    w(:,i)=(train_xt_phi*trainX+2*lambda*eye(size(trainX,2),size(trainX,2)))^-1*(train_xt_phi*superY(:,i));
+    cpb.setText(sprintf('Training... %s', trainFileList(i).('name')));
+    cpb.setValue(100*(i/length(trainFileList)));
+    fprintf('\n'); % Force output
 end
+matlabpool close;
                 
 
 dlmwrite(wFile,w);

@@ -2,6 +2,7 @@ want_parallel = true;
 trainFileDir = './train';
 trainFiles = sprintf('%s/*.csv', trainFileDir);
 modelDir = './model';
+progressDir = './tmp';
 % Lookup table of Twitter accounts.
 mapFile = sprintf('%s/map.csv', modelDir);
 wFile = sprintf('%s/w.csv', modelDir);
@@ -9,6 +10,8 @@ colNormFile = sprintf('%s/col_nz_means.csv', modelDir);
 featureMeanFile = sprintf('%s/featureMean.csv',modelDir);
 featureStdFile = sprintf('%s/featureStd.csv',modelDir);
 
+mkdir(progressDir);
+delete(sprintf('%s/*.progress', progressDir));
 
 % 65 accuracy
 %lambda=0.001
@@ -36,9 +39,14 @@ for i=1:length(trainFileList)
   trainX = [trainX; M];
   trainY = [trainY; ones(size(M, 1), 1) * i];
   
-  fprintf(mapFd, '%d,%s\n', i, trainFileList(i).('name'));
-  cpb.setText(sprintf('Reading files... %s', trainFileList(i).('name')));
-  cpb.setValue(100*(i/length(trainFileList)));
+  rawname = trainFileList(i).('name');
+  
+  fclose(fopen(sprintf('%s/%s.progress', progressDir, rawname), 'w'));
+  num_complete = size(dir(sprintf('%s/*.progress', progressDir)), 1);
+  
+  fprintf(mapFd, '%d,%s\n', i, rawname);
+  cpb.setText(sprintf('Reading files... %s', rawname));
+  cpb.setValue(100*(num_complete/length(trainFileList)));
 end
 cpb.stop();
 

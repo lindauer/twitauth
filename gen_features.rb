@@ -25,13 +25,15 @@ def main()
       num_chars.keys.join(',') + ',' +
       punc_chars.keys.collect{|v| q = v.gsub(/\"/, "\"\""); "\"#{q}\""}.join(',') + ',' +
       spec_chars.keys.collect{|v| "\"#{v}\""}.join(',') + ',non_ascii_chars,' +
-      func_words.keys.join(',')
+      func_words.keys.join(',') + ',RT,MT,is_exact_rt,is_inexact_rt'
   end
 
   ARGF.each do |line|
     # Handle CSV
-    csv_fields = (CSV.parse_line(line, :row_sep => "\n"))[0];
-    text = csv_fields
+    csv_fields = CSV.parse_line(line, :row_sep => "\n")
+    text = csv_fields[0]
+    tweet_nls = csv_fields[1]
+    retweet_text = csv_fields[2]
 
     # Reset counts
     [word_shapes, word_lens, num_chars, alpha_chars, punc_chars, spec_chars, func_words].each do |h|
@@ -81,6 +83,15 @@ def main()
       func_words[word] += 1 if func_words.member?(word)
     end
 
+    contains_RT = (text.include?('RT') ? 1 : 0)
+    contains_MT = (text.include?('MT') ? 1 : 0)
+    is_exact_rt = 0
+    is_inexact_rt = 0
+    if (!retweet_text.empty?)
+      is_exact_rt = text.include?(retweet_text) ? 1 : 0
+      is_inexact_rt = 1 - is_exact_rt
+    end
+
     puts "#{word_count},#{char_count}," +
       word_shapes.values.join(',') + ',' +
       word_lens.values.join(',') + ',' +
@@ -88,7 +99,8 @@ def main()
       num_chars.values.join(',') + ',' +
       punc_chars.values.join(',') + ',' +
       spec_chars.values.join(',') + ",#{non_ascii_chars}," +
-      func_words.values.join(',')
+      func_words.values.join(',') + ',' + 
+      "#{contains_RT},#{contains_MT},#{is_exact_rt},#{is_inexact_rt}"
   end
 
   exit 0

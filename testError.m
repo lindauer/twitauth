@@ -3,7 +3,7 @@
 % to output full rankings and compute results with an external script.
 output_full_rankings = true;
 want_parallel = true;
-testFileDir = './test-dups';
+testFileDir = '~jbl/twitauth/test-dups';
 modelDir = './model';
 rankingDir = './rankings'; % For full rankings, if requested.
 progressDir = './tmp';
@@ -46,7 +46,7 @@ parfor i=1:size(mapF{1,1},1)
   % Read CSV file, skipping header
   M = csvread(filename, 1, 0);
 
-  [prediction distances] = nn_predict(filename);
+  [prediction distances] = RLSC_predict(filename);
   
   % Get ranking of correct answer.
   rank = find(prediction(:,1)==mapF{1,1}(i));

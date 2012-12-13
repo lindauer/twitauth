@@ -608,15 +608,9 @@ tweet (0.06 and 0.04 bits, respectively).
 Because Narayanan, et al. reported their best results with a
 combination of nearest neighbors (NN) and regularized least squares
 classification (RLSC), we decided to first implement these classifiers
-and run them against the data. We soon discovered that RLSC is quite
-complicated and decided to begin with just NN to get a working
-end-to-end example with which we could begin running diagnostics. Due
-the simplicity of the algorithm and our need to potentially utilize
-intermediate data, we opted to implement NN in Matlab. During the
-remainder of the quarter, we do plan to return to RLSC to compare
-performance of NN and RLSC separately and in combination.
+and run them against the data. 
 
-Focusing on NN, we implemented the variation described by Narayanan
+Initially focusing on NN, we implemented the variation described by Narayanan
 along with the normalization procedure from that same paper. Rather
 than keeping all data points in memory, which would be very expensive
 considering the number of Twitter users, we compute one centroid for
@@ -659,7 +653,33 @@ over these rankings.
 \label{fig_sim}
 \end{figure}
 
+We implemented the Regularized Least Square Classifier algorithm starting with the original closed form solution as described in Rifkin's paper \cite{Rifkin}.  
 
+$$W=(X^T X+\lambda I)^{-1} X^T y$$
+
+
+Given the size of the training set ~500,000 tweets X, and the multiclass \{-1, +1\} convention Y matrix with 844 classifier vectors the algorithm took ~12 hours to complete for each classifier vector.  However, we found that the training error performance was not affected by converting to a \{0,1\} convention and we were able to complete the entire classifier calculation using sparse matrices in matlab in a single step $$W=(X^T X+\lambda I)^{-1} X^T Y$$ within a few minutes.
+
+As a matter of convention, we classified each tweet as either a positive or negative by determining the maximum value of the linear classifier method and used the frequency of a classifier being chosen as an aggregate to determine confidence accross a sampling of tweets.  However, this result did not vary materially from using the sum of the raw values produced by each tweet.
+  
+Similar to the Narayanan paper, we discovered that the resulting training error of this One Vs. All method, ranged between 20 and 30 percent which was an order of magnitude worse than our NN classifier.  We know this to be a problem in general for multi-class classifiers with large amounts of classifications as our algorithm generally had a thousand positive examples compared to nearly half a million negative examples. In order to address this issue we explored a handful of methods to level the data as the algorithm is not variant to rescaling of the positive and negative examples.  We implemented several methods \cite{Schapire} to attempt to reduce this error by including pruning \cite{Dekel} negative examples for each OWA being trained and artifically creating like samples for training.  However, we found that these methods only improved the classification error by no more than 5-7%.  
+
+Eventually we derived the following closed form solution for penalizing false categorization of positive examples using the concept described in the Narayanan paper:  
+
+Let $\phi$ be a diagonal matrix where $phi_{ii} = {number of negative examples} / {number of positive examples}$.
+
+
+
+Using this closed form required the generation of a ~ 500,000 x 500,000 sparse diagonal matrix for each of the 844 classifiers and required us to return to calculating for each classifier.  Due to memory constraints even with using sparse matrices in MATLAB, this algorithm was difficult to parallize beyond a handful of labs and thus still required several hours to complete.  However, with this results we were able to reduce our training error down to X and our generalization error to Z.  Most importantly,  the algorithm performed significantly better on the small set of twitter pairs, classifying Z% of them correctly.  
+
+In accomplishing the above results, we did not experiment much with the regularization paramater lambda.  Our choice of lambda was the minimum power of 10 that did not result in several classifiers resulting in nearly singular matrices for the algorithm, which, in this case was 10\^-9.  We minimally explored methods to improve the performance and memory requirements of the algorithm, but did not explore methods such as conjugate descent which has been referenced by [k]. 
+
+
+[k] Rifkin, Ryan, Gene Yeo, and Tomaso Poggio. "Regularized least-squares classification." Nato Science Series Sub Series III Computer and Systems Sciences 190 (2003): 131-154.
+
+[j] Ofer Dekel Ohad Shamir. "Multiclass-Multilabel Classification with More Classes than Examples." Proceedings of the 13th international Conference on Artificial Intelligence and Statistics (AISTATS) 2010, Chia Laguna Resort, Sardinia, Italy. Volume 9 of JMLR: W\&CP 9
+
+[l] Schapire, Robert E., and Yoram Singer. "BoosTexter: A boosting-based system for text categorization." Machine learning 39.2 (2000): 135-168.
 \section{Continuing Work}
 
 We believe that by improving our featureset and adding RLSC, we will
@@ -825,6 +845,15 @@ Ireland, M.E., \& Pennebaker, J.W. (2010).  Language style matching in writing: 
 
 \bibitem{Perito}
 Perito, Daniele, et al. "How unique and traceable are usernames?." Privacy Enhancing Technologies. Springer Berlin/Heidelberg, 2011.
+
+\bibitem{Rifkin}
+Rifkin, Ryan, Gene Yeo, and Tomaso Poggio. "Regularized least-squares classification." Nato Science Series Sub Series III Computer and Systems Sciences 190 (2003): 131-154.
+
+\bibitem{Dekel}
+Ofer Dekel Ohad Shamir. "Multiclass-Multilabel Classification with More Classes than Examples." Proceedings of the 13th international Conference on Artificial Intelligence and Statistics (AISTATS) 2010, Chia Laguna Resort, Sardinia, Italy. Volume 9 of JMLR: W\&CP 9
+
+bibitem{Schapire}
+Schapire, Robert E., and Yoram Singer. "BoosTexter: A boosting-based system for text categorization." Machine learning 39.2 (2000): 135-168.
 
 \end{thebibliography}
 

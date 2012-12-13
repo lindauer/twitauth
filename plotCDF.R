@@ -14,6 +14,9 @@ results <- read.csv("nn_results.csv", header=F, col.names=c('rank', 'name'))
 # columns r and ecdf.
 cdf <- summarize(results, r=unique(results$rank), ecdf=ecdf(results$rank)(unique(results$rank)))
 
+# Larger fonts!
+#theme_set(theme_gray(base_size = 16))
+
 xlab <- scale_x_continuous("K")
 ylab <- scale_y_continuous("Fraction of tests with TP in top K")
 gg <- ggplot(data=cdf, aes(x=r, y=ecdf)) + geom_step() + xlab + ylab

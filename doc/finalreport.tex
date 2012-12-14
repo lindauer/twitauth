@@ -430,7 +430,7 @@
 
 \section{Introduction}
 % no \IEEEPARstart
-As of June 2012, Twitter has 500M users, 140M of whom are in the
+As of June 2012, Twitter had 500M users, 140M of whom are in the
 United States. These users, especially those outside of the United
 States, may assume that they have a certain level of anonymity among
 this sea of tweets. Our project investigates whether the identity of
@@ -442,81 +442,76 @@ Internet scale, by looking at the characteristics of different
 classifiers when applied to a corpus of approximately 100k
 blogs. Starting with the set of features, classifiers, and
 normalization methods that yielded the best results over blog data in
-that paper we adapt them to Twitter data and measure the results.
+that paper, we adapt them to Twitter data and measure the results.
 % You must have at least 2 lines in the paragraph with the drop letter
 % (should never be an issue)
 
 \section{Data Collection}
-Our goal was to obtain a training set across at least 1000 users and
-have at least 1000 tweets per user to enable our feature set to have
-enough data due to the sparsity of our planned data features. Our
-first data collection task was to identify an appropriate subset of
-the Twitter users and Twitter users in which we have prior knowledge
-that they are authored by the same user.
+We obtain a training set across more than 800  users and
+have at least 1000 tweets per user to enable our classifiers to have
+enough data due to the sparsity of the derived features and the limitations imposed on the length of a tweet. We also attempt to obtain a number of twitter accounts in which we have prior knowledge that they are authored by the same user.
 
-Table I describes the various sources we attempted gathering and how we ended up using the data.
+Table I describes the various sources we reviewed and how we ended up using the data.
 \begin{table}[!h]
   \centering
   \begin{tabularx}{\linewidth}{X X X}
     \toprule
     \bf{Source} & \bf{Desired Usage} & \bf{Actual Usage} \\ \midrule
-    Klout & We attempted to gather the top thousand klout users as a method of gathering users with rich content. & Not used. Only small lists of top klout rankings are published and we were not able to obtain a list longer than 10-20. \\ \midrule
-    Twitter Firehose & Obtain tons of tweets across a massive number of users. & Not used. While the data was broad, it did not provide us with a long enough history of any individual user to populate our sparse set of features. \\ \midrule
-    Twitaholic & Provides a top 1000 “most followed” list of Twitter users. & Used as a starting point for a list of users to gather data from. \\ \midrule
-    Dell Solicitation & Obtain a list of employees who maintain two seperate Twitter accounts. & Used to populate a set of “known” Twitter accounts that are authored by the same person. \\ \midrule
-    Web Search & Search for phrases such as “also follow me at” on Twitter profile pages. & Used to populate a set of “known” Twitter accounts that are authored by the same person. \\ \midrule
-    Google Plus Profile Scrape & Discover users that report having multiple Twitter feeds to be followed. & Used to add to set of Twitter accounts with known authors. \\
+    Klout & Top thousand klout users as a source of a variety of users with rich content. & Not viable for use. Only small lists of top Klout rankings are published. \\ \midrule
+    Twitter Firehose & Obtain tons of tweets across a massive number of users. & Not viable for use. While the data is broad, it does not provide us with a long enough history of any individual user to populate our sparse set of features. \\ \midrule
+    Twitaholic & Provides a top 1000 “most followed” list of Twitter users. & Provides the basis of our twitter users to gather data from. \\ \midrule
+    Dell Solicitation & Obtain a list of employees who maintain two separate Twitter accounts. & Provides a set of “known” Twitter accounts that are authored by the same person. \\ \midrule
+    Web Search & Search for phrases such as “also follow me at” on Twitter profile pages. & Provides a set of “known” Twitter accounts that are authored by the same person. \\ \midrule
+    Google Plus Profile Scrape & Discover users that report having multiple Twitter feeds to be followed. & Adds to set of Twitter accounts with known authors. \\
     \bottomrule
   \end{tabularx}
   \caption{Data Sources}
 \end{table}
-We initially utilized a web site called discovertext.com to follow the
+We initially utilize a web site called discovertext.com to follow the
 desired accounts and begin collecting data. However, the service
-proved to be insufficient for our needs because it failed to capture
+is insufficient for our needs because it fails to capture
 information about retweets and is unable to provide historical tweet
-data. As a result we utilized the Twitter API to gather the last 1000
+data. As a result, we utilize the Twitter API to gather the last 1000
 tweets of each of the users identified in Table I. Primarily due to
-Twitter rate limit limitations the data gathering took a few days to
+Twitter rate limit limitations, the data gathering requires a few days to
 complete.
 
-We identified a collection of Twitter account pairs where one author
+We identify a collection of Twitter account pairs where one author
 is responsible for both accounts. Our primary methods for identifying
-those accounts were a request to employees of Dell with official Dell
+those accounts are by issuing a request to employees of Dell with official Dell
 Twitter accounts, and using Google to search for phrases indicating
-multiple Twitter accounts. We also obtained some meta-information
-about Google Plus profiles from the authors of \cite{Perito} and used
-that to target a crawl of Google Plus profile data. This produced an
+multiple Twitter accounts. We also obtain some meta-information
+about Google Plus profiles from the authors of "How Unique and Traceable are Usernames?." \cite{Perito} and used
+that to target a crawl of Google Plus profile data. This produces an
 additional set of account pairs. After eliminating non-English feeds,
 feeds containing only links, etc., we are left with 58 labeled
 accounts from 27 different authors.
 
 Due to the small number of valid account pairs in which we have prior
-knowledge of the account being authored by the same user, measured not
-just our performance over the labeled data, but also over a cross
-validation set using a 70/30 split of training and test data. Since
+knowledge of the account being authored by the same user, we used  a cross
+validation 70/30 split of training and test data to simulate dual authors in determining generalization error. Since
 this measures error against the same feed, rather than another feed by
-the same author, it is not ideal. But it gives us another way to know
-that the algorithm will generalize.
+the same author, it is not ideal, but it gives us a good indication of the algorithm's general performance in de-anonymizing tweets..
 
-Additionally, as we collected data we have noticed a handful of issues
-we will need to address, as they might introduce confounds into the
+Additionally, as we collect data we notice some issues
+we that might introduce confounds into the
 experiment. Examples of these include foreign languages and tweets
-automatically generated by applications such as foursquare.
+automatically generated by applications, such as foursquare. We do not incorporate any cleansing of these issues in our experiments other than the final test we performed using the known accounts with duplicate authors in which we manually review their feeds to remove any feeds that contained any obvious issues.
 
-The results in this report are based on a collection of 845 Twitter
+The results in this report are based on a collection of 844 Twitter
 streams containing approximately 777k total tweets. These include the
 27 sets of accounts that are known to be maintained by the same
 author.
 
 \section{Features}
 
-Our selection of features was inspired by Narayanan\cite{Narayanan},
+Our selection of features is inspired by Narayanan\cite{Narayanan},
 Writeprints\cite{Abbasi}, and Ireland\cite{Ireland}. It is, in fact,
-nearly a subset of the Narayanan features. These features aim to focus
+mostly a subset of the Narayanan features. These features aim to focus
 on the style of the tweet rather than its topic. So, for example, we
 specifically look at function/stop words rather than ignoring them and
 focusing on words with large TF.IDF scores. In adapting Narayanan's
-previous work to Twitter, we added several Twitter-specific features,
+previous work to Twitter, we add several Twitter-specific features,
 described in Table II.
 
 \begin{table}[h]
@@ -536,11 +531,11 @@ described in Table II.
   \end{tabularx}
   \caption{Features used, adapted from \cite{Narayanan}}
 \end{table}
-All 393 of these features were extracted with a Ruby script, and
-stored in CSV for ingestion by the classifier programs, which were
-implemented in Matlab.
+We extract all 393 of these features using a Ruby script, and
+store in CSV for ingestion by the classifier programs, which were
+implemented in Matlab. Extracting these features presents no notable challenges in scalability or algorithmic complexity.
 
-We were curious to know which of these features had the most impact on
+We were curious to know which of these features has the most impact on
 our classification accuracy. To find out, we adoped the definition of
 information gain used in Narayanan. That is,
 $$IG(F_{i}) = H(T) - H(T|F_{i}) = H(T) + H(F_{i}) - H(T, F_{i})$$
@@ -583,9 +578,9 @@ be highly discriminative. However, the most discriminative characters
 are different for blog posts and tweets. Narayanan found that
 apostrophes, periods, and commas were the most important characters
 for blogs, while we found that o, a, t, e, and period were the most
-important for tweets. We were initially puzzled by this result, but
-soon realized that all of the characters comprising http:// are near
-the top of our list. It may be that the presence of vowels
+important for tweets. This result is initially puzzlinb, but we
+soon realize that all of the characters comprising http:// are near
+the top of our list. It may be that the presence of vowels that
 distinguishes tweets consisting primarily of English words from those
 containing mostly URLs.
 
@@ -593,7 +588,7 @@ Far and away, our most influential feature is the frequency of
 non-ASCII characters. Some Twitter users routinely include unicode in
 their tweets, while others never do. (For an example of someone who
 uses them frequently, please see http://twitter.com/snooki.) We
-included this feature on a hunch that it would be discriminatory and
+included this feature on a hypothesis that it would be discriminatory and
 it was.
 
 Finally, we note that the frequency of ``@'' is highly ranked, but not
@@ -607,10 +602,10 @@ tweet (0.06 and 0.04 bits, respectively).
 
 Because Narayanan, et al. reported their best results with a
 combination of nearest neighbors (NN) and regularized least squares
-classification (RLSC), we decided to first implement these classifiers
+classification (RLSC), we implement these classifiers
 and run them against the data. 
 
-Initially focusing on NN, we implemented the variation described by Narayanan
+Initially focusing on NN, we implement the variation described by Narayanan
 along with the normalization procedure from that same paper. Rather
 than keeping all data points in memory, which would be very expensive
 considering the number of Twitter users, we compute one centroid for
@@ -626,13 +621,11 @@ the sum of the distances of all the tweets to each of the centroids
 and rank the centroids by their average nearness to a tweet in the
 test stream. We ask whether the account by the same author appears in
 the top N\% of the ranking, including whether it is ranked
-first. Because at the time of this writing, we only have 22 labeled
-pairs of Twitter accounts, we also measured generalization error using
+first. We also measure generalization error using
 70/30 cross validation on tweets from the same account. In computing
 both training error and cross validation generalization error, we
-counted a prediction as correct only if the correct account appeared
-first in the ranked list. Our computed training error was 0.61\%. Our
-computed cross validation generalization error was only 2.5\%. This
+count a prediction as correct only if the correct account appeared
+first in the ranked list. With our training and cross validations set, NN yields a 0.61\% training error and a 2.5\% generalization error. This
 generalization accuracy is surprising considering that we have yet to
 implement any grammar-based or Twitter-specific features. Our feature
 set is composed largely of one-grams and function words.
@@ -653,35 +646,35 @@ over these rankings.
 \label{fig_sim}
 \end{figure}
 
-We implemented the Regularized Least Square Classifier algorithm starting with the original closed form solution as described in Rifkin's paper \cite{Rifkin}.  
+We implement the Regularized Least Square Classifier algorithm starting with the original closed form solution as described in Rifkin's paper \cite{Rifkin}.  
 
-$$W=(X^T X+\lambda I)^{-1} X^T y$$
+$$W=(X^T X+\lambda I)^{-1} X^T \vec{y}$$
 
 
-Given the size of the training set ~500,000 tweets X, and the multiclass \{-1, +1\} convention Y matrix with 844 classifier vectors the algorithm took ~12 hours to complete for each classifier vector.  However, we found that the training error performance was not affected by converting to a \{0,1\} convention and we were able to complete the entire classifier calculation using sparse matrices in matlab in a single step $$W=(X^T X+\lambda I)^{-1} X^T Y$$ within a few minutes.
+Given the size of the training set of approximately 500,000 tweets in our feature matrix X, and the multiclass \{-1, +1\} convention Y matrix with 844 classifier vectors the algorithm requires approximately 12 hours to complete for each classifier vector.  However, we found that the training error performance is not affected by converting to a \{0,1\} convention and we are able to complete the entire classifier calculation using sparse matrices in matlab in a single step $$W=(X^T X+\lambda I)^{-1} X^T Y$$ within a few minutes.
 
-As a matter of convention, we classified each tweet as either a positive or negative by determining the maximum value of each linear classifier method for a single tweet, setting that classifer to one and the others to zero.  We used the frequency of a classifier being chosen across the sample set as an aggregate to determine confidence accross a sampling of tweets.  However, this result did not vary notably from using the sum of the raw values produced by each tweet.
+As a matter of convention, we classify each tweet as either a positive or negative by determining the maximum value of each linear classifier method for a single tweet, setting that classifer to one and the others to zero.  We used the frequency of a classifier being chosen across the sample set as an aggregate to determine confidence accross a sampling of tweets.  However, this result does not vary notably from using the sum of the raw values produced by each tweet.
   
-Similar to the Narayanan paper, we discovered that the resulting training error of this One Vs. All (OWA) method, ranged between 20 and 30 percent which was an order of magnitude worse than our NN classifier.  This is a known problem for OWA  classifiers with a large number of labels.  For each label in our data set, the RLSC generally had a thousand positive examples compared to nearly half a million negative examples. In order to address this issue we explored a handful of methods to level the data as the algorithm.  Rescaling the data was not an option as the algorithm is invariant to rescaling of the examples.  We implemented several methods \cite{Schapire} to attempt to reduce this error by including pruning \cite{Dekel} negative examples for each OWA being trained and artifically creating like samples for training.  However, we found that these methods only improved the classification error by only $5-7\%$.  
+Similar to the results in the Narayanan paper, the resulting training error of this One Vs. All (OVA) method, ranges between 20\% and 30\%  which is more than an order of magnitude worse than our NN classifier.  This is a known problem for OVA  classifiers with a large number of labels.  For each label in our data set, the RLSC generally has a thousand positive examples compared to nearly half a million negative examples. In order to address this issue we explore a handful of methods to level the data as the algorithm.  Rescaling the alone is not an aoption as the algorithm is invariant to rescaling of the input data.  We try a few methods \cite{Schapire} to reduce this error by including pruning \cite{Dekel} negative examples for each OVA being trained and artifically creating like samples for training.  However, we find that these methods only improved the classification error by only $5-7\%$.  
 
-Eventually we derived the following closed form solution for appropriatley balancing the ratio of positive and negative examples inspired by the concept described in the Narayanan paper. We let $\Phi_j$ be a diagonal matrix where $\Phi_{j_{ii}}$ is equal to the ratio of negative to positive examples for the current classifier j.
+We are inspired by the penalization concept in the Narayanan paper and derive the following closed form solution for appropriatley balancing the ratio of positive and negative examples. We let $\Phi_j$ be a diagonal matrix where $\Phi_{j_{ii}}$ is equal to the ratio of negative to positive examples for the current classifier j:
 
-$$J(\theta) = 0.5 (X\theta - y)^T \Phi_j (X\theta-y) + \lambda ||\theta||^2 $$
-$$ \bigtriangledown_\theta J(\theta) = X^T \Phi_j X \theta -X^T \Phi_j y +2 \lambda \theta = 0$$
-$$ \theta= (X^T\Phi_j X+2 \lambda I)^{-1} X^T \Phi_j y$$
+$$J(\theta) = \frac{1}{2} (X\theta - \vec{y})^T \Phi_j (X\theta-\vec{y}) + \lambda ||\theta||^2 $$
+$$ \bigtriangledown_\theta J(\theta) = X^T \Phi_j X \theta -X^T \Phi_j \vec{y} +2 \lambda \theta = 0$$
+$$ \theta= (X^T\Phi_j X+2 \lambda I)^{-1} X^T \Phi_j \vec{y}$$
 
-Using this closed form required the generation of $\Phi \in \Re^{500k x 500k}$   for each of the 844 classifiers and required us to return to iterating through calculating each classifier independently.  Due to the memory requirements of this algorithm in MATLAB using sparse matrices, this algorithm was difficult to parallize beyond a handful of labs and thus still required several hours to complete.  However, with this results we were able to reduce our training error down to $1.1\%$ and our generalization error to $4.7\%$.  Most importantly,  the algorithm performed significantly better on the set of known twitter account pairs with the same author, classifying 41% of them correctly.  
+Using this closed form requires the generation of $\Phi \in \Re^{500k x 500k}$   for each of the 844 classifiers and requires  iterating through each classifier independently.  Due to the memory requirements of this algorithm in MATLAB using sparse matrices, this closed form algorithm is difficult to parallelize beyond a handful of labs and thus still required several hours to complete.  However, with this results we are able to reduce our training error down to $1.1\%$ and our generalization error to $4.7\%$.  Most importantly,  the algorithm performs significantly better on the set of known twitter account pairs with the same author, classifying 41% of them correctly.  
 
-In accomplishing the above results, we did not experiment much with the regularization paramater $\lambda$.  Our choice of lambda was the minimum order of magnitude that did not result in the classifiers calculation resulting in nearly singular matrices for the algorithm, which, in this case was $10^{-9}$.  We minimally explored methods to improve the performance and memory requirements of the algorithm, but did not explore methods such as conjugate descent and dynamic programed as referenced by Naranayan and Rifkin \cite{Rifkin}. 
+In accomplishing the above results, we do not experiment much with the regularization paramater $\lambda$.  Our choice of lambda is the minimum order of magnitude that did not result in the classifiers calculation resulting in nearly singular matrices for the algorithm, which, in this case was $10^{-9}$.  We minimally explore methods to improve the performance and memory requirements of the algorithm without notable impact, but do not explore methods that do not require large matrix operations such as conjugate descent and dynamic programming as referenced by Naranayan and Rifkin \cite{Rifkin} which may be necessary to scale significantly beyond the number of users we are working with in this experiment. 
 
 \section{Conclusion}
 
-We are encouraged by our initial result. The algorithms both exhibits
-excellent accuracy in cross validation, and even do fairly well in
+We are encouraged by our results. The algorithms both exhibits
+excellent accuracy in cross validation, and  does fairly well in
 the general use case where the test stream comes from a different
 Twitter account by the same author. We expected less accuracy from
-Twitter than from the blog or email data used in previous work becuase
-the amount of data is so much smaller. So the work is promising and
+Twitter than from the blog or email data used in previous work because
+the size of the tweets are significantly smaller in comparison. So the work is promising and
 there is a substantial opportunity for continued exploration.
 
 % An example of a floating figure using the graphicx package.
@@ -820,7 +813,7 @@ Perito, Daniele, et al. "How unique and traceable are usernames?." Privacy Enhan
 Rifkin, Ryan, Gene Yeo, and Tomaso Poggio. "Regularized least-squares classification." Nato Science Series Sub Series III Computer and Systems Sciences 190 (2003): 131-154.
 
 \bibitem{Dekel}
-Ofer Dekel Ohad Shamir. "Multiclass-Multilabel Classification with More Classes than Examples." Proceedings of the 13th international Conference on Artificial Intelligence and Statistics (AISTATS) 2010, Chia Laguna Resort, Sardinia, Italy. Volume 9 of JMLR: W\&CP 9
+Ofer Dekel Ohad Shamir. "Multiclass-Multilabel Classification with More Classes than Examples." Proceedings of the 13th international Conference on Artificial Intelligence and Statistics (AISTATS) 2010, Chia Laguna Resort, Sardinia, Italy. Volume 9 of JMLR: W\&CP 9.
 
 \bibitem{Schapire}
 Schapire, Robert E., and Yoram Singer. "BoosTexter: A boosting-based system for text categorization." Machine learning 39.2 (2000): 135-168.

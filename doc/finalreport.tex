@@ -714,9 +714,14 @@ diagonal matrix where $\Phi_{j_{ii}}$ is equal to the ratio of
 negative to positive examples in rows corresponding to a positive
 example in classifier $j$, and $1$'s for all other diagonal values.
 
-$$J(\theta) = \frac{1}{2} (X\theta - \vec{y})^T \Phi_j (X\theta-\vec{y}) + \lambda ||\theta||^2 $$
-$$ \bigtriangledown_\theta J(\theta) = X^T \Phi_j X \theta -X^T \Phi_j \vec{y} +2 \lambda \theta = 0$$
-$$ \theta= (X^T\Phi_j X+2 \lambda I)^{-1} X^T \Phi_j \vec{y}$$
+More formally:
+$$w_{j} = \frac{\sum_{i}{1\{y_{j_i}=0\}}}{\sum_{i}{1\{y_{j_i}=1\}}}$$
+$$\Phi_{j_{ii}} = w_{j}y_{i} + (1-y_i)$$
+and specific the $y_j$ vectors in the derivations
+
+$$J(\theta) = \frac{1}{2} (X\theta - \vec{y_j})^T \Phi_j (X\theta-\vec{y_j}) + \lambda ||\theta||^2 $$
+$$ \nabla_\theta J(\theta) = X^T \Phi_j X \theta -X^T \Phi_j \vec{y_j} +2 \lambda \theta = 0$$
+$$ \theta= (X^T\Phi_j X+2 \lambda I)^{-1} X^T \Phi_j \vec{y_j}$$
 
 Using this closed form requires the generation of $\Phi \in \Re^{500k
   x 500k}$ for each of the 844 classifiers and requires iterating

@@ -19,6 +19,8 @@ rlsc_cdf <- summarize(rlsc_results, r=unique(rlsc_results$rank), ecdf=ecdf(rlsc_
 rlsc_cdf$Algorithm <- 'RLSC'
 all_cdf <- rbind(nn_cdf, rlsc_cdf)
 
+theme_set(theme_gray(base_size = 16))
+
 gg <- ggplot(data=all_cdf, aes(x=r, y=ecdf, linetype=Algorithm, group=Algorithm)) + geom_line(se=F) + scale_linetype_manual(values=c("solid", "longdash")) + scale_color_manual(values=c("#56B4E9", "#009E73"))
 
 xlab <- scale_x_continuous("K (vertical lines denote 5% and 20% thresholds)")

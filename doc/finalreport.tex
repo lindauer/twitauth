@@ -727,7 +727,8 @@ and thus still required several hours to complete.  However, with
 these results we are able to reduce our training error to $1.1\%$ and
 our generalization error to $4.7\%$. Most importantly, the algorithm
 performs significantly better than NN on the set of known Twitter dual
-accounts, classifying 41\% of them correctly.
+accounts, classifying 41\% of them correctly. Comparing RLSC to NN in
+Figure 1, we see that RLSC outperforms NN at every threshold.
 
 In accomplishing the above results, we do not experiment much with the
 regularization paramater $\lambda$.  Our choice of lambda is the
@@ -741,28 +742,33 @@ programming as referenced by Naranayan and Rifkin \cite{Rifkin} which
 may be necessary to scale significantly beyond the number of users we
 are working with in this experiment.
 
-\section {Continuing Work}
+\section {Future Work}
 
-Given the initial promising results, there is opportunity for continued exploration in improving the algorithms and exploring these concepts on a larger scale. Some immediate adjacent areas for exploration include:
+Given the initial promising results, there is opportunity for
+continued work in testing classifier accuracy and performance at
+larger scales, as well as in several other areas, including:
 
 \begin{itemize}
 \item Expanding the exploration of stylometry features in previous work to further impact generalzation error.
-\item Collecting a broader set of known account pairs and / or identifying a list of potential pairs to be confirmed.
+\item Collecting a broader set of known account pairs and/or identifying a list of potential pairs to be confirmed.
 \item Exploring conjugate descent, dynamic programming,  or stochastic methods to improve the speed and memory usage of the RLSC algorithm.
 \item Exploring ensemble learning to combine RLSC and NN algorithms and its impact on generalization error.
 \item Applying these methods on a much larger number of accounts (e.g. 1,000,000 twitter accounts).
-\item Removing language and application data that may be introducing confounds in the data.
+\item Removing language and application data that may be introducing confounds.
 \end{itemize}
 
 \section{Conclusion}
 
-We are encouraged by our results. The algorithms both exhibits
-excellent accuracy in cross validation, and  does fairly well in
-the general use case where the test stream comes from a different
-Twitter account by the same author. We expected less accuracy from
-Twitter than from the blog or email data used in previous work because
-the size of the tweets are significantly smaller in comparison. So the work is promising and
-there is a substantial opportunity for continued exploration.
+We are encouraged by our results. The classifiers both exhibit
+excellent accuracy in cross validation, and do fairly well in the
+general use case where the test stream comes from a different Twitter
+account by the same author. We expected less accuracy from Twitter
+than from the blog or email data used in previous work because the
+size of the tweets are significantly smaller in comparison. With the
+small number of labeled examples in our data set, we cannot make a
+judgement about whether performance was better or worse on Twitter
+vs. blog data, but we can conclude that stylometric analysis does, in
+fact, perform well on tweets.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.

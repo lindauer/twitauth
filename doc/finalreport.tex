@@ -717,7 +717,8 @@ example in classifier $j$, and $1$'s for all other diagonal values.
 More formally:
 $$w_{j} = \frac{\sum_{i}{1\{y_{j_i}=0\}}}{\sum_{i}{1\{y_{j_i}=1\}}}$$
 $$\Phi_{j_{ii}} = w_{j}y_{i} + (1-y_i)$$
-and specific the $y_j$ vectors in the derivations
+Using these classifier specific $\Phi_j$ and $\vec{y_j}$ values, we can
+derive $\theta_j$ for each classifier $j$ in closed form as follows.
 
 $$J(\theta_j) = \frac{1}{2} (X\theta_j - \vec{y_j})^T \Phi_j (X\theta_j-\vec{y_j}) + \lambda ||\theta_j||^2 $$
 $$ \nabla_{\theta_j} J(\theta_j) = X^T \Phi_j X \theta_j -X^T \Phi_j \vec{y_j} +2 \lambda \theta_j = 0$$
